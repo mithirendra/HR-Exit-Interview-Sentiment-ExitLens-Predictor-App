@@ -17,8 +17,5 @@ An AI-powered HR analytics tool that automatically analyses exit interview respo
 ## Version
 Version 0 — Full Analysis tab complete. Predictions and Basic Analysis tabs in progress.
 
-# Objective
-HR Analytics Portfolio Project — targeting CHRO and VP People Analytics roles in Malaysia and SEA.
-
 ## Built By
 &copy; 2026 Mithirendra Maniam
