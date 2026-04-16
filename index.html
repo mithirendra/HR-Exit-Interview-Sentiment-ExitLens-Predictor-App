@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.min.css">
+</head>
+<body>
+    <div class="topbar">
+        <div class="logo">exit<span>lens</span></div>
+        <div class="badge">An AI powered tool</div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-title">Exit Interview Analysis</div>
+        <div class="hero-sub">Upload a structured CSV for full analysis, or paste a single response for a quick read</div>
+    </div>
+
+    <div class="split">
+       
+        <!-- Left panel - Full analysis -->
+        <div class="pane pane-left">
+            <div class="pane-tag">
+                <div class="tag-dot dot-full"></div>
+                <span class="tag-full">Full Analysis</span>
+            </div>
+            <div class="pane-title">Upload CSV</div>
+            <div class="pane-sub">Structured dataset with department, manager, and tenure columns. Returns full insight suite including predictions.</div>
+
+            <div class="upload-box" id="dropzone">
+                <div class="upload-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#e8610a" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                </div>
+                <div class="upload-label" id="upload-label">Drag and drop your CSV here</div>
+                <div class="upload-hint">.csv accepted</div>
+            </div>
+            <input type="file" id="fileInput" accept=".csv" style="display:none">
+
+            <div class="columns-list">
+                <div class="columns-title">Required columns</div>
+                <div class="col-row"><div class="col-name">employee_id</div><div class="col-desc">Unique identifier</div></div>
+                <div class="col-row"><div class="col-name">exit_date</div><div class="col-desc">YYYY-MM-DD</div></div>
+                <div class="col-row"><div class="col-name">department</div><div class="col-desc">e.g. Tech, Sales, HR</div></div>
+                <div class="col-row"><div class="col-name">manager_name</div><div class="col-desc">Direct manager</div></div>
+                <div class="col-row"><div class="col-name">tenure_years</div><div class="col-desc">e.g. 2.5</div></div>
+                <div class="col-row"><div class="col-name">would_recommend</div><div class="col-desc">Yes / No</div></div>
+                <div class="col-row"><div class="col-name">response_q1</div><div class="col-desc">Why did you leave?</div></div>
+                <div class="col-row"><div class="col-name">response_q2</div><div class="col-desc">What could we have done differently?</div></div>
+                <div class="col-row"><div class="col-name">response_q3</div><div class="col-desc">Describe your manager relationship</div></div>
+                <div class="col-row"><div class="col-name">response_q4</div><div class="col-desc">Would you recommend us?</div></div>
+            </div>
+        </div>
+        
+        <!-- Right panel - Full analysis -->
+        <div class="pane">
+            <div class="pane-tag">
+                <div class="tag-dot dot-basic"></div>
+                <span class="tag-basic">Basic Analysis</span>
+            </div>
+            <div class="pane-title">Paste text</div>
+            <div class="pane-sub">Single employee response. Returns sentiment score, top themes, plain-language summary, and predicted exit probability.</div>
+            
+            <div class="paste-box" id="paste-box">
+                <textarea class="paste-area" id="pastetext" placeholder="Paste exit interview responses here..."></textarea>
+                <div class="paste-footer">
+                    <div class="paste-hint">One employee response at a time</div>
+                    <div class="paste-hint" id="charcount">0 characters</div>
+                </div>
+            </div>
+
+            <div class="limitation">
+                <div class="limitation-text"><strong>No department or manager context.</strong> For pattern detection across teams, use CSV upload.</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="analyse-bar">
+        <button class="btn-analyse" id="analyseBtn">Analyse</button>
+    </div>
+
+    <div class="results hidden" id="results">
+        <div class="tab-row" id="tabrow"></div>
+
+        <!-- Full Analysis View -->
+        <div id="view-full" class="hidden">
+
+            <!-- 4 KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi">
+                    <div class="kpi-label">Total records</div>
+                    <div class="kpi-value" id="kpi-total">—</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Avg sentiment score</div>
+                    <div class="kpi-value orange" id="kpi-sentiment">—</div>
+                    <div class="kpi-sub" id="kpi-sentiment-sub">—</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Would recommend</div>
+                    <div class="kpi-value green" id="kpi-recommend">—</div>
+                    <div class="kpi-sub" id="kpi-recommend-sub">—</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">High-risk flags</div>
+                    <div class="kpi-value red" id="kpi-flags">—</div>
+                    <div class="kpi-sub" id="kpi-flags-sub">—</div>
+                </div>
+            </div>
+
+            <!-- 2 Panels - Top Exit Themes and Sentiment By Dept -->
+            <div class="panels">
+                <div class="panel" id="panel-themes">
+                    <div class="panel-title">Top exit themes</div>
+                    <div class="theme-list" id="theme-list"></div>
+                </div>
+
+                <div class="panel" id="panel-dept">
+                    <div class="panel-title">Sentiment by department</div>
+                    <div class="dept-list" id="dept-list"></div>
+                </div>
+            
+                <!-- AI Generated Flags Panel -->
+                <div class="flags-panel" id="flags-panel">
+                    <div class="panel-title">AI-generated flags</div>
+                    <div class="flags-list" id="flags-list"></div>
+                </div>
+
+                <div class="quotes-panel" id="quotes-panel">
+                    <div class="panel-title">Verbatim samples</div>
+                    <div class="quotes-list" id="quotes-list"></div>
+                </div>
+            </div>
+
+            <div class="mgr-panel" id="mgr-panel">
+                <div class="panel-title">Manager breakdown <span class="panel-sub">sorted by avg sentiment score</span></div>
+                <table class="mgr-table" id="mgr-table">
+                    <thead>
+                        <tr>
+                            <th>Manager</th>
+                            <th>Department</th>
+                            <th>Exits</th>
+                            <th>Avg sentiment</th>
+                            <th>Top theme</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mgr-tbody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- Basic Analysis View -->
+        <div id="view-basic" class="hidden"></div>
+
+        <!-- Predictions View -->
+        <div id="view-predictions" class="hidden">
+
+            
+        </div>
+    </div>
+    
+    <footer>
+        <hr>
+        <p>&copy; 2026 Version 1 Built by MM</p>
+    </footer>
+
+    <script src="app.min.js"></script>
+</body>
+</html>
