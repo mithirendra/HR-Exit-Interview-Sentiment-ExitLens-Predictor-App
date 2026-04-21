@@ -1,4 +1,4 @@
-# ExitLens — Exit Interview Sentiment Analysis Tool
+# ExitLens — Exit Interview Sentiment Analysis & Predictor Tool
 An AI-powered HR analytics tool that automatically analyses exit interview responses, detects themes and sentiment, identifies patterns by department and manager, and generates actionable insights for HR leaders.
 
 ## Features
